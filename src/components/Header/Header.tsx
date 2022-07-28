@@ -1,57 +1,41 @@
-import { styled, alpha } from '@mui/material/styles'
+import { useState, useEffect, useRef } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
-import InputBase from '@mui/material/InputBase'
 import SearchIcon from '@mui/icons-material/Search'
 import Link from '@mui/material/Link'
 import { amber } from '@mui/material/colors'
 
+import useDebounce from 'hooks/useDebounce'
+
+import { Search, SearchIconWrapper, StyledInputBase } from './styles'
+
 import { ReactComponent as SWLogo } from 'assets/images/SWLogo.svg'
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.black, 0.35),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.black, 0.45),
-  },
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(1),
-    width: 'auto',
-  },
-}))
+type SearchAppBarProps = {
+  setSearchValue?: (value: string) => void
+}
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}))
+const SearchAppBar = ({ setSearchValue }: SearchAppBarProps) => {
+  const [value, setValue] = useState<string>('')
+  const debouncedValue = useDebounce(value, 500)
+  const mounted = useRef(false)
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: '12ch',
-      '&:focus': {
-        width: '20ch',
-      },
-    },
-  },
-}))
+  useEffect(() => {
+    if (mounted.current) {
+      setSearchValue && setSearchValue(debouncedValue)
+    } else {
+      mounted.current = true
+    }
+  }, [debouncedValue])
 
-const SearchAppBar = () => {
+  const searchHandler = (
+    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+  ): void => {
+    const { value } = event.target
+    setValue(value)
+  }
+
   return (
     <AppBar
       position='static'
@@ -65,14 +49,21 @@ const SearchAppBar = () => {
           </Link>
         </Box>
 
-        <Box ml='auto'>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase placeholder='Character' inputProps={{ 'aria-label': 'search' }} />
-          </Search>
-        </Box>
+        {setSearchValue && (
+          <Box ml='auto'>
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder='Character'
+                inputProps={{ 'aria-label': 'search' }}
+                onChange={searchHandler}
+                value={value}
+              />
+            </Search>
+          </Box>
+        )}
       </Toolbar>
     </AppBar>
   )

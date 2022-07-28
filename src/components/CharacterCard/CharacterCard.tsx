@@ -1,29 +1,25 @@
-import * as React from 'react'
+import { Link as RouterLink } from 'react-router-dom'
+
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import { CardActionArea } from '@mui/material'
 
-// type CharacterCardProps = {}
+type CharacterCardProps = {
+  id: string
+  name: string
+  imageURL: string
+}
 
-const CharacterCard = () => {
+const CharacterCard = ({ name, id, imageURL }: CharacterCardProps) => {
   return (
     <Card sx={{ maxWidth: 345 }}>
-      <CardActionArea>
-        <CardMedia
-          component='img'
-          height='140'
-          image='/static/images/cards/contemplative-reptile.jpg'
-          alt='green iguana'
-        />
+      <CardActionArea component={RouterLink} to={`/characters/${id}`}>
+        <CardMedia component='img' height='400' image={imageURL} alt={`${name} - image`} />
         <CardContent>
           <Typography gutterBottom variant='h5' component='div'>
-            Luke Skywalker
-          </Typography>
-          <Typography variant='body2' color='text.secondary'>
-            Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-            across all continents except Antarctica
+            {name}
           </Typography>
         </CardContent>
       </CardActionArea>
