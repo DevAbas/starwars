@@ -31,6 +31,25 @@ const Home = () => {
     [trigger],
   )
 
+  const renderSWCharacterGrid = () => {
+    let template = null
+    const results = searchValue === '' ? data?.results : searchResults?.data?.results
+
+    template = results?.map((character) => (
+      <Grid item key={character.name}>
+        <CharacterCard
+          name={character.name}
+          imageURL={`https://starwars-visualguide.com/assets/img/characters/${getCharacterIdFromUrl(
+            character.url,
+          )}.jpg`}
+          id={getCharacterIdFromUrl(character.url)}
+        />
+      </Grid>
+    ))
+
+    return template
+  }
+
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
@@ -49,41 +68,16 @@ const Home = () => {
 
       <Box sx={{ flexGrow: 1, paddingTop: 20, paddingBottom: 20 }}>
         <Container maxWidth='lg'>
-          <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-            {searchValue === '' &&
-              data.results.map((character) => (
-                <Grid item xs={2} sm={4} md={4} key={character.name}>
-                  <CharacterCard
-                    name={character.name}
-                    imageURL={`https://starwars-visualguide.com/assets/img/characters/${getCharacterIdFromUrl(
-                      character.url,
-                    )}.jpg`}
-                    id={getCharacterIdFromUrl(character.url)}
-                  />
-                </Grid>
-              ))}
-            {searchValue !== '' &&
-              searchResults.data?.results.map((character) => (
-                <Grid item xs={2} sm={4} md={4} key={character.name}>
-                  <CharacterCard
-                    name={character.name}
-                    imageURL={`https://starwars-visualguide.com/assets/img/characters/${getCharacterIdFromUrl(
-                      character.url,
-                    )}.jpg`}
-                    id={getCharacterIdFromUrl(character.url)}
-                  />
-                </Grid>
-              ))}
+          <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 12, sm: 12, md: 3 }}>
+            {renderSWCharacterGrid()}
           </Grid>
           <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
-            {searchValue === '' && (
-              <Pagination
-                count={9}
-                onChange={onChangePagination}
-                variant='outlined'
-                shape='rounded'
-              />
-            )}
+            <Pagination
+              count={9}
+              onChange={onChangePagination}
+              variant='outlined'
+              shape='rounded'
+            />
           </Box>
         </Container>
       </Box>
